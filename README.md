@@ -1,2 +1,5 @@
-# poernbach
-Was die Bayerische Vermessungsverwaltung über Erics Heimatgemeinde weiß: Höhenmodell, Luftbilder, 3D-Gebäude und Oberflächenmodell, ausgewertet für das 8,2 × 8,2 km große Kartenquadrat der BeamNG-Karte.
+# Pörnbach in amtlichen Daten
+
+Auswertung der amtlichen Geodaten (DGM1, DOP40, LoD2, DOM20) für die Gemeinde Pörnbach – Grundlage der BeamNG-Karte „Pörnbach Map“.
+
+Datenquelle: Bayerische Vermessungsverwaltung – www.geodaten.bayern.de (CC BY 4.0). Gemeindegrenze © OpenStreetMap-Mitwirkende (ODbL).

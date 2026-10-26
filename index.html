@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pörnbach in amtlichen Daten</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: eine Lesespalte wie ein Kartenbegleitheft, Karten dürfen breiter laufen; Zahlenkacheln oben */
+:root{
+  --bg:#f4f6f2; --panel:#ffffff; --ink:#18231d; --ink2:#4b5a51; --muted:#7a877f; --rule:#d9dfd8;
+  --accent:#9a5b2e; --series:#2a78d6; --series-soft:#cde2fb; --grid:#e6eae4; --tip:#18231d; --tipink:#f4f6f2;
+  --f-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111713; --panel:#18201b; --ink:#e4ebe6; --ink2:#b3c0b8; --muted:#86948b; --rule:#2c3830;
+  --accent:#d79a64; --series:#3987e5; --series-soft:#184f95; --grid:#242e28; --tip:#e4ebe6; --tipink:#111713; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111713; --panel:#18201b; --ink:#e4ebe6; --ink2:#b3c0b8; --muted:#86948b; --rule:#2c3830;
+  --accent:#d79a64; --series:#3987e5; --series-soft:#184f95; --grid:#242e28; --tip:#e4ebe6; --tipink:#111713; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+.wrap{max-width:1080px;margin:0 auto}
+.col{max-width:68ch}
+header{padding-block:44px 28px;border-bottom:1px solid var(--rule)}
+.eyebrow{font:500 13px/1.2 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{font:700 clamp(40px,7vw,72px)/0.95 var(--f-display);letter-spacing:-.01em;margin:10px 0 14px;text-wrap:balance}
+h2{font:600 clamp(28px,4vw,38px)/1.05 var(--f-display);margin:0 0 8px;text-wrap:balance}
+h3{font:600 20px/1.2 var(--f-display);letter-spacing:.01em;margin:0 0 6px}
+p{margin:0 0 12px}
+.lead{font-size:18px;color:var(--ink2)}
+.coords{font:400 13px/1.5 var(--f-mono);color:var(--muted)}
+section{padding-block:44px;border-bottom:1px solid var(--rule);display:grid;gap:22px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);margin-top:26px}
+.kpi{background:var(--panel);padding:16px 16px 14px;display:grid;gap:2px;align-content:start}
+.kpi b{font:600 34px/1 var(--f-display);font-variant-numeric:tabular-nums}
+.kpi span{font-size:13px;color:var(--ink2)}
+.kpi small{font:12px/1.3 var(--f-mono);color:var(--muted)}
+figure{margin:0;display:grid;gap:8px}
+figure img{width:100%;height:auto;display:block;border:1px solid var(--rule);background:var(--panel)}
+figcaption{font-size:13px;color:var(--muted)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:22px}
+.hb{display:grid;gap:6px;margin-top:6px}
+.hbrow{display:grid;grid-template-columns:minmax(90px,38%) 1fr;gap:10px;align-items:center;font-size:13px}
+.hbk{color:var(--ink2);text-align:right;line-height:1.25;overflow-wrap:anywhere;min-width:0}
+.hbt{display:flex;align-items:center;gap:6px;min-width:0}
+.hbb{display:block;height:16px;background:var(--series);border-radius:0 3px 3px 0;flex:0 0 auto}
+.hbrow.on .hbb{background:var(--accent)}
+.hbv{font:500 12px var(--f-mono);color:var(--ink);white-space:nowrap}
+.grid2>*{min-width:0}
+.card{background:var(--panel);border:1px solid var(--rule);padding:16px 16px 12px;min-width:0}
+.card p.note{font-size:13px;color:var(--muted);margin:6px 0 0}
+.chart{width:100%;overflow-x:auto}
+.chart svg{display:block;width:100%;height:auto}
+.chart text{fill:var(--ink2);font:12px var(--f-body)}
+.chart .val{fill:var(--ink);font:500 12px var(--f-mono)}
+.chart .ax{fill:var(--muted);font:11px var(--f-mono)}
+.chart .grid{stroke:var(--grid)}
+.chart .bar{fill:var(--series)}
+.chart .bar:hover,.chart .bar.on{fill:var(--accent)}
+.chart .hit{fill:transparent;cursor:default}
+.chart .line{fill:none;stroke:var(--series);stroke-width:2}
+.chart .area{fill:var(--series-soft);opacity:.55}
+.chart .mark{stroke:var(--accent);stroke-dasharray:3 3}
+.chart .marklabel{fill:var(--accent);font:600 12px var(--f-body)}
+.chart .cross{stroke:var(--ink2);stroke-width:1}
+.chart .dot{fill:var(--series);stroke:var(--panel);stroke-width:2}
+.tip{position:fixed;pointer-events:none;background:var(--tip);color:var(--tipink);font:12px/1.4 var(--f-mono);padding:6px 8px;border-radius:4px;z-index:20;white-space:nowrap}
+table{border-collapse:collapse;width:100%;font-size:14px}
+.tablewrap{overflow-x:auto;border:1px solid var(--rule);background:var(--panel)}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font:600 12px/1.3 var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+td.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
+tfoot td{font-weight:600}
+.chip{display:inline-block;font:500 11px/1 var(--f-mono);padding:4px 6px;border:1px solid var(--rule);border-radius:3px;color:var(--ink2);white-space:nowrap}
+ul.facts{margin:0;padding-left:18px;display:grid;gap:4px}
+footer{padding-top:28px;font-size:13px;color:var(--muted)}
+footer p{max-width:80ch}
+@media (max-width:520px){.kpi b{font-size:28px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="eyebrow">Gemeinde Pörnbach · Lkr. Pfaffenhofen a.d.Ilm · Schlüssel 09186144</div>
+  <h1>Pörnbach in amtlichen Daten</h1>
+  <p class="lead col">Was die Bayerische Vermessungsverwaltung über Erics Heimatgemeinde weiß: Höhenmodell, Luftbilder, 3D-Gebäude und Oberflächenmodell, ausgewertet für das 8,2 × 8,2 km große Kartenquadrat der BeamNG-Karte.</p>
+  <p class="coords">Kartenquadrat SW E 677 754 / N 5 383 274 · NO E 685 946 / N 5 391 466 · ETRS89 / UTM 32N</p>
+  <div class="kpis" id="kpis"></div>
+</header>
+
+<section>
+  <div class="col">
+    <div class="eyebrow">Datenbestand</div>
+    <h2>Fünf amtliche Datensätze, rund 0,7 GB</h2>
+    <p>Alles liegt in <span class="coords">05 Pörnbach\Rohdaten</span>, heruntergeladen am 18. und 22.10.2026 von geodaten.bayern.de.</p>
+  </div>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Datensatz</th><th>Inhalt</th><th>Kacheln</th><th style="text-align:right">Größe</th></tr></thead>
+    <tbody>
+      <tr><td><b>DGM1</b></td><td>Geländehöhe ohne Bewuchs und Häuser, 1-m-Raster aus Laserscan</td><td>81 × 1 km²</td><td class="num">265 MB</td></tr>
+      <tr><td><b>DOP40</b></td><td>Luftbild 40 cm, Befliegung 2025</td><td>81 × 1 km²</td><td class="num">187 MB</td></tr>
+      <tr><td><b>DOP20</b></td><td>Luftbild 20 cm, nur Ortskerne</td><td>8 × 1 km²</td><td class="num">74 MB</td></tr>
+      <tr><td><b>LoD2</b></td><td>3D-Gebäude mit Dachform, Höhe, Nutzung, Adresse</td><td>25 × 4 km²</td><td class="num">11 MB <span class="chip">180 MB entpackt</span></td></tr>
+      <tr><td><b>DOM20</b></td><td>Oberfläche mit Bäumen und Häusern, auf 1 m verkleinert</td><td>81 × 1 km²</td><td class="num">162 MB</td></tr>
+    </tbody>
+    <tfoot><tr><td colspan="3">Zusammen</td><td class="num">ca. 700 MB</td></tr></tfoot>
+  </table></div>
+</section>
+
+<section>
+  <div class="col">
+    <div class="eyebrow">DOP40 · Luftbild</div>
+    <h2>Die Gemeinde von oben</h2>
+    <p>Gelb ist die Gemeindegrenze aus OpenStreetMap. Im Nordwesten liegt das flache, offene Paartal, im Südosten der geschlossene Wald zwischen Raitbach und dem Kartenrand.</p>
+  </div>
+  <figure><img src="bilder/luftbild.jpg" alt="Luftbild des Kartenquadrats mit der Gemeindegrenze Pörnbach" width="1600" height="1600" loading="eager"><figcaption>Mosaik aus 81 Luftbild-Kacheln, für die Seite auf 4 m je Pixel verkleinert.</figcaption></figure>
+</section>
+
+<section>
+  <div class="col">
+    <div class="eyebrow">DGM1 · Höhenmodell</div>
+    <h2>108 Meter zwischen Paartal und Waldkuppe</h2>
+    <p id="hoehentext"></p>
+  </div>
+  <figure><img src="bilder/hoehen.jpg" alt="Höhenkarte mit Höhenlinien, höchstem und tiefstem Punkt" width="1600" height="1600" loading="lazy"><figcaption>Höhenlinien alle 10 m, beschriftet alle 50 m. Gestrichelt: Gemeindegrenze.</figcaption></figure>
+  <figure><img src="bilder/relief3d.jpg" alt="3D-Ansicht des Kartenquadrats mit Luftbild, fünffach überhöht" loading="lazy"><figcaption>Das ganze Kartenquadrat als 3D-Relief, Blick von Süden, Höhen fünffach überhöht, Luftbild darübergelegt.</figcaption></figure>
+  <div class="grid2">
+    <div class="card"><h3>Wie viel Fläche liegt auf welcher Höhe?</h3><div class="chart" id="c-hist"></div><p class="note">Fläche der Gemeinde je 5-m-Höhenstufe in km². Zwei Buckel: Talboden um 385–395 m und Hochfläche um 425 m.</p></div>
+    <div class="card"><h3>Wie steil ist es?</h3><div class="chart" id="c-slope"></div><p class="note">Anteil der Gemeindefläche je Neigungsklasse. Gemessen auf 2-m-Raster.</p></div>
+  </div>
+  <div class="card"><h3>Höhenprofil Süd → Nord durch Raitbach, Pörnbach und Puch</h3><div class="chart" id="c-prof"></div><p class="note">Vom Südrand des Kartenquadrats über die drei Ortskerne bis zum Nordrand, ein Messpunkt alle 20 m.</p></div>
+  <figure><img src="bilder/neigung.jpg" alt="Karte der Hangneigung" width="1600" height="1600" loading="lazy"><figcaption>Hangneigung: Je röter, desto steiler. Die steilen Bachtäler im Südosten fallen sofort auf.</figcaption></figure>
+</section>
+
+<section>
+  <div class="col">
+    <div class="eyebrow">LoD2 · 3D-Gebäude</div>
+    <h2 id="gebh2"></h2>
+    <p id="gebtext"></p>
+  </div>
+  <figure><img src="bilder/gebaeude.jpg" alt="Alle Gebäude im Kartenquadrat, eingefärbt nach Höhe" width="1600" height="1600" loading="lazy"><figcaption>Jeder Grundriss aus LoD2, je dunkler, desto höher. Orange: Gemeindegrenze.</figcaption></figure>
+  <div class="grid2">
+    <div class="card"><h3>Gebäude je Ortsteil</h3><div class="chart" id="c-ort"></div><p class="note">Ortsteile durch Häufung der Grundrisse bestimmt (Abstand unter 70 m = gleicher Ort).</p></div>
+    <div class="card"><h3>Wofür werden sie genutzt?</h3><div class="chart" id="c-nutz"></div><p class="note">Amtliche Gebäudefunktion. Die größte Gruppe sind Nebengebäude: Scheunen, Schuppen, Hallen.</p></div>
+    <div class="card"><h3>Dachformen</h3><div class="chart" id="c-dach"></div><p class="note">Gemeinde Pörnbach, Dachformen mit mindestens 8 Gebäuden.</p></div>
+    <div class="card"><h3>Gebäudehöhen</h3><div class="chart" id="c-gebh"></div><p class="note">Höhe vom Boden bis zum First in Metern, Anzahl Gebäude.</p></div>
+  </div>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Die höchsten Gebäude der Gemeinde</th><th>Ortsteil</th><th style="text-align:right">Höhe</th></tr></thead>
+    <tbody id="t-top"></tbody>
+  </table></div>
+  <div class="card"><h3>Gebäude im ganzen Kartenquadrat nach Gemeinde</h3><div class="chart" id="c-gem"></div><p class="note">Auch die Nachbargemeinden am Kartenrand sind in LoD2 vollständig enthalten.</p></div>
+</section>
+
+<section>
+  <div class="col">
+    <div class="eyebrow">DOM20 − DGM1 · Bewuchs</div>
+    <h2 id="waldh2"></h2>
+    <p id="waldtext"></p>
+  </div>
+  <figure><img src="bilder/baeume.jpg" alt="Karte der Baumhöhen aus dem Oberflächenmodell" width="1600" height="1600" loading="lazy"><figcaption>Höhe von Bäumen und Büschen über dem Boden (ab 3 m), Häuser herausgerechnet. Orange Kreis: höchste gemessene Baumkrone.</figcaption></figure>
+  <div class="card"><h3>Wie hoch ist der Bewuchs?</h3><div class="chart" id="c-baum"></div><p class="note">Fläche in Hektar je Höhenklasse, nur innerhalb der Gemeinde.</p></div>
+</section>
+
+<section>
+  <div class="col">
+    <div class="eyebrow">Alle vier übereinander</div>
+    <h2>Ortskern Pörnbach, 800 × 800 m</h2>
+    <p>Dasselbe Stück Ort in vier Datensätzen. Im Oberflächenmodell (unten links) sind Häuser hell und Bäume dunkel, weil Bäume meist höher sind als Dächer. Rechts unten die LoD2-Grundrisse, die direkt in der BeamNG-Karte stehen.</p>
+  </div>
+  <figure><img src="bilder/ortskern.jpg" alt="Ortskern Pörnbach als Luftbild, Höhenmodell, Oberflächenmodell und LoD2-Gebäude" width="1600" height="1600" loading="lazy"></figure>
+</section>
+
+<footer>
+  <p>Datenquelle: Bayerische Vermessungsverwaltung – www.geodaten.bayern.de (CC BY 4.0): DGM1, DOP40, DOP20, LoD2, DOM20. Gemeindegrenze © OpenStreetMap-Mitwirkende (ODbL). Ausgewertet von Claude am 26.10.2026 aus den Rohdaten in „05 Pörnbach\Rohdaten“.</p>
+  <p>Hinweise: Wald = zusammenhängender Bewuchs ab 3 m Höhe und ab 0,5 ha. Hopfengärten können im Oberflächenmodell als Bewuchs erscheinen, je nach Flugzeitpunkt. Ortsteil-Zuordnung über Abstand der Gebäude, nicht amtlich.</p>
+</footer>
+</div>
+<div class="tip" id="tip" hidden></div>
+
+<script>
+const D = {"hist":[["375–380",0.25],["380–385",1.672],["385–390",2.379],["390–395",2.198],["395–400",1.554],["400–405",1.253],["405–410",1.302],["410–415",1.379],["415–420",1.451],["420–425",1.507],["425–430",1.768],["430–435",1.387],["435–440",1.212],["440–445",0.865],["445–450",0.712],["450–455",0.541],["455–460",0.434],["460–465",0.279],["465–470",0.219],["470–475",0.166],["475–480",0.11],["480–485",0.05],["485–490",0.002]],"profil":[[0.0,471.7],[0.02,470.4],[0.04,468.9],[0.06,466.1],[0.08,464.9],[0.1,464.5],[0.12,463.9],[0.14,463.1],[0.16,462.2],[0.18,461.4],[0.2,460.5],[0.22,459.7],[0.24,458.9],[0.26,458.2],[0.28,457.5],[0.3,456.8],[0.321,456.1],[0.341,455.4],[0.361,454.9],[0.381,454.4],[0.401,454.1],[0.421,453.4],[0.441,452.6],[0.461,452.3],[0.481,451.9],[0.501,451.7],[0.521,451.5],[0.541,451.7],[0.561,451.7],[0.581,452.0],[0.601,452.2],[0.621,452.1],[0.641,451.4],[0.661,450.6],[0.681,449.9],[0.701,448.7],[0.721,448.1],[0.741,447.8],[0.761,447.4],[0.781,446.6],[0.801,446.1],[0.821,444.9],[0.841,444.6],[0.861,444.8],[0.881,443.6],[0.901,443.0],[0.921,442.2],[0.941,442.1],[0.962,442.4],[0.982,442.8],[1.002,442.3],[1.022,441.7],[1.042,440.5],[1.062,439.8],[1.082,439.0],[1.102,438.4],[1.122,437.1],[1.142,435.7],[1.162,434.2],[1.182,432.7],[1.202,431.7],[1.222,430.1],[1.242,428.0],[1.262,425.1],[1.282,423.0],[1.302,424.5],[1.322,430.5],[1.342,435.4],[1.362,438.2],[1.382,440.7],[1.402,444.6],[1.422,446.0],[1.442,441.5],[1.462,440.6],[1.482,442.4],[1.502,444.1],[1.522,447.1],[1.542,447.9],[1.562,447.8],[1.582,447.2],[1.603,445.7],[1.623,444.4],[1.643,443.7],[1.663,443.2],[1.683,442.9],[1.703,442.7],[1.723,442.5],[1.743,442.6],[1.763,442.7],[1.783,442.5],[1.803,442.2],[1.823,441.6],[1.843,440.2],[1.863,438.0],[1.883,435.9],[1.903,434.6],[1.923,433.3],[1.943,430.8],[1.963,428.5],[1.983,426.7],[2.003,425.1],[2.023,422.1],[2.043,420.6],[2.063,419.7],[2.083,419.0],[2.103,418.1],[2.123,417.7],[2.143,416.7],[2.163,417.0],[2.183,414.8],[2.203,414.8],[2.223,415.0],[2.244,414.9],[2.264,415.9],[2.284,416.0],[2.304,415.9],[2.324,416.1],[2.344,415.8],[2.364,421.3],[2.384,421.1],[2.404,427.7],[2.424,427.9],[2.444,427.5],[2.464,426.9],[2.484,423.0],[2.504,427.7],[2.524,430.5],[2.544,429.6],[2.564,423.4],[2.584,418.9],[2.604,420.6],[2.624,419.9],[2.644,425.5],[2.664,419.9],[2.684,420.2],[2.704,423.1],[2.725,425.7],[2.745,428.8],[2.765,432.0],[2.785,434.9],[2.805,436.2],[2.825,437.2],[2.845,438.0],[2.865,438.1],[2.885,434.2],[2.905,434.6],[2.925,435.8],[2.945,434.4],[2.965,428.7],[2.985,426.7],[3.005,426.7],[3.025,422.0],[3.045,424.3],[3.065,427.4],[3.085,431.5],[3.105,437.2],[3.125,435.7],[3.145,434.2],[3.165,432.2],[3.185,429.4],[3.206,428.9],[3.226,429.8],[3.246,431.3],[3.266,433.4],[3.286,434.1],[3.306,435.6],[3.326,435.3],[3.346,434.8],[3.366,434.2],[3.386,432.5],[3.406,429.1],[3.426,429.8],[3.446,429.8],[3.466,429.5],[3.486,429.1],[3.506,428.5],[3.526,427.4],[3.546,426.4],[3.566,425.8],[3.586,425.5],[3.606,425.5],[3.626,425.0],[3.646,424.5],[3.666,424.1],[3.687,423.2],[3.707,422.3],[3.727,421.4],[3.747,420.0],[3.767,419.5],[3.787,418.5],[3.807,417.2],[3.827,416.4],[3.847,415.3],[3.867,414.3],[3.887,413.6],[3.907,412.7],[3.927,412.4],[3.947,411.9],[3.967,411.5],[3.987,409.5],[4.007,409.4],[4.027,409.1],[4.047,408.9],[4.067,408.1],[4.087,407.6],[4.107,407.2],[4.127,406.6],[4.147,406.5],[4.168,406.7],[4.188,408.0],[4.208,408.2],[4.228,407.7],[4.248,407.6],[4.268,406.7],[4.288,405.6],[4.308,404.3],[4.328,402.6],[4.348,401.5],[4.369,401.5],[4.389,401.0],[4.409,402.1],[4.429,403.0],[4.449,406.1],[4.469,410.9],[4.489,412.3],[4.509,415.4],[4.53,416.6],[4.55,419.5],[4.57,419.7],[4.59,418.6],[4.61,418.8],[4.63,418.5],[4.65,418.8],[4.671,418.7],[4.691,418.9],[4.711,418.3],[4.731,414.9],[4.751,413.6],[4.771,412.6],[4.791,411.6],[4.812,410.1],[4.832,408.2],[4.852,407.4],[4.872,405.0],[4.892,403.8],[4.912,402.9],[4.932,402.2],[4.952,401.4],[4.973,400.3],[4.993,399.1],[5.013,398.3],[5.033,397.5],[5.053,396.8],[5.073,396.1],[5.093,395.4],[5.114,394.8],[5.134,394.3],[5.154,393.9],[5.174,393.8],[5.194,393.1],[5.214,392.8],[5.234,392.5],[5.255,392.3],[5.275,392.2],[5.295,392.3],[5.315,392.2],[5.335,392.0],[5.355,392.1],[5.375,392.1],[5.396,392.1],[5.416,392.1],[5.436,392.0],[5.456,392.1],[5.476,392.0],[5.496,392.0],[5.516,392.0],[5.536,392.2],[5.557,392.7],[5.577,392.9],[5.597,392.9],[5.617,393.0],[5.637,392.9],[5.657,392.8],[5.677,392.8],[5.698,393.4],[5.718,393.7],[5.738,394.4],[5.758,393.9],[5.778,393.6],[5.798,393.9],[5.818,393.7],[5.839,393.6],[5.859,393.7],[5.879,394.8],[5.899,395.0],[5.919,395.3],[5.939,395.2],[5.959,395.0],[5.979,394.9],[6.0,394.5],[6.02,394.2],[6.04,394.1],[6.06,393.2],[6.08,392.4],[6.1,392.1],[6.12,391.7],[6.14,390.7],[6.16,390.2],[6.18,389.5],[6.201,388.6],[6.221,387.8],[6.241,387.4],[6.261,387.7],[6.281,387.6],[6.301,387.4],[6.321,387.3],[6.341,387.2],[6.361,386.9],[6.381,386.7],[6.401,386.7],[6.422,386.8],[6.442,386.6],[6.462,386.6],[6.482,386.6],[6.502,386.5],[6.522,386.4],[6.542,386.5],[6.562,386.5],[6.582,386.5],[6.602,387.4],[6.623,388.1],[6.643,388.5],[6.663,388.4],[6.683,388.1],[6.703,387.8],[6.723,387.6],[6.743,387.4],[6.763,387.2],[6.783,387.4],[6.803,386.9],[6.824,386.6],[6.844,386.4],[6.864,386.1],[6.884,386.1],[6.904,386.0],[6.924,386.0],[6.944,385.8],[6.964,385.5],[6.984,385.4],[7.004,385.1],[7.024,384.7],[7.045,384.1],[7.065,383.8],[7.085,383.5],[7.105,383.0],[7.125,382.7],[7.145,382.4],[7.165,382.0],[7.185,382.1],[7.205,382.2],[7.225,382.1],[7.246,382.1],[7.266,383.0],[7.286,383.2],[7.306,383.2],[7.326,383.1],[7.346,383.3],[7.366,383.3],[7.386,383.2],[7.406,382.7],[7.426,382.2],[7.447,381.4],[7.467,380.5],[7.487,380.1],[7.507,380.6],[7.527,380.2],[7.547,378.9],[7.567,378.9],[7.587,378.8],[7.607,378.7],[7.627,378.6],[7.648,378.6],[7.668,378.6],[7.688,378.7],[7.708,378.4],[7.728,378.3],[7.748,378.3],[7.768,378.2],[7.788,378.3],[7.808,378.4],[7.828,378.2],[7.848,378.3],[7.869,378.3],[7.889,378.1],[7.909,377.9],[7.929,378.0],[7.949,378.0],[7.969,377.9],[7.989,377.8],[8.009,377.7],[8.029,377.7],[8.049,377.6],[8.07,377.5],[8.09,377.5],[8.11,377.4],[8.13,377.4],[8.15,377.4],[8.17,377.4],[8.19,377.4],[8.21,377.5],[8.23,377.7],[8.25,378.7],[8.271,377.7],[8.291,377.3],[8.311,377.4],[8.331,377.4]],"orte":{"Raitbach":2.223,"Pörnbach":4.248,"Puch":5.959},"slope":[["0–2°",38.8],["2–5°",37.6],["5–10°",16.0],["10–15°",4.3],["über 15°",3.3]],"ortsteil":[["Pörnbach",1765],["Puch",560],["übrige Höfe/Weiler",155],["Raitbach",153],["Maushof",46],["Oberkreut",45]],"nutzung":[["Nebengebäude, Scheune, Gewerbe",1704],["Wohngebäude",767],["Überdachung, Bauwerk",123],["Garage",101],["Öffentlich, Kirche, Schule",24],["unbekannt",3],["Trafostation",2]],"dach":[["Satteldach",1620],["Flachdach",594],["Pultdach",395],["Walmdach",68],["Zeltdach",15],["Bogendach",13],["Sonstiges",9],["Krüppelwalmdach",8]],"gebh":[["0–3",398],["3–6",1015],["6–9",743],["9–12",491],["12–15",60],["15–20",13],["über 20",4]],"baumh":[["3–6",27.47],["6–10",43.97],["10–15",91.52],["15–20",99.23],["20–25",130.57],["25–30",209.28],["30–35",78.4],["über 35",5.99]],"gemq":[["Pörnbach",2724],["Reichertshofen",2685],["Hohenwart",1647],["Rohrbach",337],["Pfaffenhofen a.d.Ilm",179]]};
+const R = {"h_gemeinde": {"min": 377.71002197265625, "max": 485.7550354003906, "mean": 414.33319091796875, "median": 412.8100280761719}, "h_quadrat": {"min": 376.4420166015625, "max": 499.39703369140625, "mean": 419.6884460449219, "median": 418.2060241699219}, "tief_gem": {"h": 377.71002197265625, "en": [682231.5, 5390850.5]}, "hoch_gem": {"h": 485.7550354003906, "en": [684174.5, 5385504.5]}, "slope_mean_g": 3.906407594680786, "geb_gem": 2724, "geb_total": 7574, "geb_wohn_gem": 767, "geb_ga_gem": 290108.7, "geb_ra_gem": 339209.6, "geb_wa_gem": 570677.9, "geb_h_mean": 6.3160209251101325, "geb_top": [{"h": 36.746, "fn": "31001_3041", "fg": "Öffentlich, Kirche, Schule", "adr": "Hauptstraße 16", "ortsteil": "Puch", "ga": 253.3}, {"h": 30.52, "fn": "31001_2000", "fg": "Wirtschaft, Gewerbe, Scheune", "adr": null, "ortsteil": "Pörnbach", "ga": 6.0}, {"h": 29.136, "fn": "31001_3041", "fg": "Öffentlich, Kirche, Schule", "adr": "Kirchplatz 6", "ortsteil": "Pörnbach", "ga": 398.6}, {"h": 20.23, "fn": "31001_2000", "fg": "Wirtschaft, Gewerbe, Scheune", "adr": null, "ortsteil": "Pörnbach", "ga": 2.2}, {"h": 19.211, "fn": "31001_3041", "fg": "Öffentlich, Kirche, Schule", "adr": "Kirchstraße 7", "ortsteil": "Raitbach", "ga": 92.3}, {"h": 18.78, "fn": "31001_2000", "fg": "Wirtschaft, Gewerbe, Scheune", "adr": null, "ortsteil": "Pörnbach", "ga": 734.6}, {"h": 17.366, "fn": "31001_2000", "fg": "Wirtschaft, Gewerbe, Scheune", "adr": null, "ortsteil": "Pörnbach", "ga": 2347.3}, {"h": 17.33, "fn": "31001_2000", "fg": "Wirtschaft, Gewerbe, Scheune", "adr": null, "ortsteil": "Pörnbach", "ga": 269.5}], "geb_adr_gem": 806, "wald_gem_ha": 645.2518, "wald_gem_pct": 28.436996418116333, "veg_gem_ha": 686.4267, "wald_h_mean": 22.269359588623047, "wald_h_p95": 32.03125, "baum_max": {"h": 42.09375, "en": [682921.5, 5384732.5]}, "wald_q_ha": 1615.805};
+const de = (v, d = 0) => Number(v).toLocaleString("de-DE", {minimumFractionDigits: d, maximumFractionDigits: d});
+const NS = "http://www.w3.org/2000/svg";
+const tip = document.getElementById("tip");
+function showTip(e, html){ tip.innerHTML = html; tip.hidden = false;
+  const x = Math.min(e.clientX + 14, window.innerWidth - tip.offsetWidth - 8); tip.style.left = x + "px"; tip.style.top = (e.clientY - 34) + "px"; }
+function hideTip(){ tip.hidden = true; }
+function el(tag, attrs, parent){ const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); if (parent) parent.appendChild(n); return n; }
+
+// KPIs
+const kpi = [
+  [de(22.69, 1) + " km²", "Gemeindefläche", "Kartenquadrat 67,1 km²"],
+  [de(R.h_gemeinde.min, 0) + "–" + de(R.h_gemeinde.max, 0) + " m", "Höhen in der Gemeinde", "Quadrat " + de(R.h_quadrat.min, 0) + "–" + de(R.h_quadrat.max, 0) + " m"],
+  [de(R.geb_gem), "Gebäude in der Gemeinde", de(R.geb_total) + " im Kartenquadrat"],
+  [de(R.wald_gem_ha) + " ha", "Wald in der Gemeinde", de(R.wald_gem_pct, 0) + " % der Fläche"],
+  [de(R.baum_max.h, 0) + " m", "höchste Baumkrone", "Mittel im Wald " + de(R.wald_h_mean, 0) + " m"],
+];
+const kp = document.getElementById("kpis");
+kpi.forEach(([b, s, sm]) => { const d = document.createElement("div"); d.className = "kpi"; d.innerHTML = `<b>${b}</b><span>${s}</span><small>${sm}</small>`; kp.appendChild(d); });
+
+document.getElementById("hoehentext").textContent =
+  `Der tiefste Punkt der Gemeinde liegt mit ${de(R.tief_gem.h, 1)} m ü. NN im Paartal ganz im Norden, der höchste mit ${de(R.hoch_gem.h, 1)} m auf der Waldkuppe im Südosten. ` +
+  `Im Mittel liegt die Gemeinde auf ${de(R.h_gemeinde.mean, 0)} m. Drei Viertel der Fläche sind flacher als 5°, im Durchschnitt ${de(R.slope_mean_g, 1)}°. ` +
+  `Im ganzen Kartenquadrat reicht es von ${de(R.h_quadrat.min, 1)} bis ${de(R.h_quadrat.max, 1)} m, der höchste Punkt liegt am Südrand außerhalb der Gemeinde.`;
+document.getElementById("gebh2").textContent = `${de(R.geb_gem)} Gebäude, davon ${de(R.geb_wohn_gem)} Wohnhäuser`;
+document.getElementById("gebtext").textContent =
+  `Alle Gebäude der Gemeinde bedecken zusammen ${de(R.geb_ga_gem / 1e4, 1)} ha Grundfläche. Ihre Dächer haben ${de(R.geb_ra_gem / 1e4, 1)} ha Fläche, die Außenwände ${de(R.geb_wa_gem / 1e4, 1)} ha. ` +
+  `Ein Gebäude ist im Mittel ${de(R.geb_h_mean, 1)} m hoch. Das höchste ist die Kirche in Puch mit ${de(R.geb_top[0].h, 1)} m, vor der Pfarrkirche in Pörnbach mit ${de(R.geb_top[2].h, 1)} m. ` +
+  `${de(R.geb_adr_gem)} Gebäude haben eine Adresse, der Rest sind Nebengebäude ohne Hausnummer.`;
+document.getElementById("waldh2").textContent = `${de(R.wald_gem_ha)} Hektar Wald, ${de(R.wald_gem_pct, 0)} Prozent der Gemeinde`;
+document.getElementById("waldtext").textContent =
+  `Das Oberflächenmodell misst die Höhe von allem, was auf dem Boden steht. Zieht man das Gelände ab und die Häuser heraus, bleibt der Bewuchs. ` +
+  `Bäume und Büsche über 3 m bedecken ${de(R.veg_gem_ha)} ha der Gemeinde, davon sind ${de(R.wald_gem_ha)} ha zusammenhängender Wald. ` +
+  `Die Bäume dort sind im Mittel ${de(R.wald_h_mean, 0)} m hoch, die höchsten 5 % über ${de(R.wald_h_p95, 0)} m. Die höchste Krone misst etwa ${de(R.baum_max.h, 0)} m. Im ganzen Kartenquadrat stehen ${de(R.wald_q_ha)} ha Wald.`;
+
+const FUNK = {"31001_3041": "Kirche", "31001_2000": "Turm oder Mast (Nebengebäude)"};
+const tb = document.getElementById("t-top");
+R.geb_top.slice(0, 6).forEach(o => {
+  const name = o.adr ? `${FUNK[o.fn] || o.fg}, ${o.adr}` : (o.ga < 20 ? "Turm oder Mast, ohne Adresse" : "Halle/Silo, ohne Adresse");
+  const tr = document.createElement("tr"); tr.innerHTML = `<td>${name}</td><td>${o.ortsteil || "–"}</td><td class="num">${de(o.h, 1)} m</td>`; tb.appendChild(tr);
+});
+
+// Balken horizontal mit Direktbeschriftung (HTML, damit die Schrift lesbar bleibt)
+function hbars(id, rows, unit, dec = 0){
+  const box = document.getElementById(id); box.classList.add("hb");
+  const max = Math.max(...rows.map(r => r[1]));
+  rows.forEach(([k, v]) => {
+    const row = document.createElement("div"); row.className = "hbrow";
+    const txt = de(v, dec) + (unit ? " " + unit : "");
+    row.innerHTML = `<span class="hbk">${k}</span><span class="hbt"><span class="hbb" style="width:calc((100% - 70px) * ${Math.max(v / max, 0.006).toFixed(4)})"></span><span class="hbv">${txt}</span></span>`;
+    row.addEventListener("mousemove", e => { row.classList.add("on"); showTip(e, `${k}: <b>${txt}</b>`); });
+    row.addEventListener("mouseleave", () => { row.classList.remove("on"); hideTip(); });
+    box.appendChild(row);
+  });
+}
+// Säulen vertikal
+function vbars(id, rows, unit, dec, xlab, every = 1){
+  const box = document.getElementById(id); const W = 560, H = 260, l = 44, r = 8, t = 12, b = 46;
+  const svg = el("svg", {viewBox: `0 0 ${W} ${H}`, role: "img"}, box);
+  const max = Math.max(...rows.map(r => r[1])); const st = niceStep(max / 4), nice = Math.ceil(max / st) * st; const sy = v => (H - t - b) * v / nice;
+  for (let v = 0; v <= nice + 1e-9; v += st){ const y = H - b - sy(v);
+    el("line", {x1: l, x2: W - r, y1: y, y2: y, class: "grid"}, svg);
+    el("text", {x: l - 6, y: y + 4, "text-anchor": "end", class: "ax"}, svg).textContent = de(v, st < 1 ? 1 : 0); }
+  const bw = (W - l - r) / rows.length;
+  rows.forEach(([k, v], i) => {
+    const x = l + i * bw, h = sy(v);
+    const bar = el("rect", {x: x + 1, y: H - b - h, width: Math.max(bw - 2, 1), height: Math.max(h, 0.5), rx: Math.min(3, bw / 4), class: "bar"}, svg);
+    if (i % every === 0) el("text", {x: x + bw / 2, y: H - b + 16, "text-anchor": "middle", class: "ax"}, svg).textContent = k.split("–")[0];
+    const hit = el("rect", {x, y: t, width: bw, height: H - t - b, class: "hit"}, svg);
+    hit.addEventListener("mousemove", e => { bar.classList.add("on"); showTip(e, `${k} ${xlab}: <b>${de(v, dec)} ${unit}</b>`); });
+    hit.addEventListener("mouseleave", () => { bar.classList.remove("on"); hideTip(); });
+  });
+  el("text", {x: (l + W - r) / 2, y: H - 8, "text-anchor": "middle"}, svg).textContent = xlab;
+}
+function niceStep(m){ const p = Math.pow(10, Math.floor(Math.log10(m))); for (const f of [1, 2, 2.5, 5, 10]) if (f * p >= m) return f * p; return 10 * p; }
+
+vbars("c-hist", D.hist, "km²", 2, "m ü. NN", 2);
+hbars("c-slope", D.slope, "%", 1);
+hbars("c-ort", D.ortsteil, "");
+hbars("c-nutz", D.nutzung, "");
+hbars("c-dach", D.dach, "");
+vbars("c-gebh", D.gebh, "Gebäude", 0, "Höhe in m");
+hbars("c-gem", D.gemq, "");
+vbars("c-baum", D.baumh, "ha", 1, "Höhe über Boden in m");
+
+// Höhenprofil mit Fadenkreuz
+(function(){
+  const box = document.getElementById("c-prof"); const W = 1000, H = 300, l = 52, r = 14, t = 26, b = 40;
+  const P = D.profil; const xmax = P[P.length - 1][0];
+  const ymin = 370, ymax = 480;
+  const sx = v => l + (W - l - r) * v / xmax, sy = v => H - b - (H - t - b) * (v - ymin) / (ymax - ymin);
+  const svg = el("svg", {viewBox: `0 0 ${W} ${H}`, role: "img"}, box);
+  for (let v = 380; v <= 480; v += 20){ el("line", {x1: l, x2: W - r, y1: sy(v), y2: sy(v), class: "grid"}, svg);
+    el("text", {x: l - 6, y: sy(v) + 4, "text-anchor": "end", class: "ax"}, svg).textContent = v; }
+  for (let k = 0; k <= 8; k++){ el("text", {x: sx(k), y: H - b + 18, "text-anchor": "middle", class: "ax"}, svg).textContent = k + " km"; }
+  const pts = P.map(p => `${sx(p[0]).toFixed(1)},${sy(p[1]).toFixed(1)}`);
+  el("path", {d: `M${sx(0)},${sy(ymin)} L${pts.join(" L")} L${sx(xmax)},${sy(ymin)} Z`, class: "area"}, svg);
+  el("path", {d: `M${pts.join(" L")}`, class: "line"}, svg);
+  Object.entries(D.orte).forEach(([n, x]) => { el("line", {x1: sx(x), x2: sx(x), y1: t - 4, y2: H - b, class: "mark"}, svg);
+    el("text", {x: sx(x), y: t - 10, "text-anchor": "middle", class: "marklabel"}, svg).textContent = n; });
+  el("text", {x: l, y: H - 6, class: "ax"}, svg).textContent = "Süd";
+  el("text", {x: W - r, y: H - 6, "text-anchor": "end", class: "ax"}, svg).textContent = "Nord";
+  const cross = el("line", {y1: t, y2: H - b, class: "cross", visibility: "hidden"}, svg);
+  const dot = el("circle", {r: 5, class: "dot", visibility: "hidden"}, svg);
+  const hit = el("rect", {x: l, y: t, width: W - l - r, height: H - t - b, class: "hit"}, svg);
+  hit.addEventListener("mousemove", e => {
+    const bb = svg.getBoundingClientRect(); const vx = (e.clientX - bb.left) * W / bb.width;
+    const km = Math.max(0, Math.min(xmax, (vx - l) / (W - l - r) * xmax));
+    let i = 0; while (i < P.length - 1 && P[i + 1][0] < km) i++;
+    const p = P[i]; cross.setAttribute("x1", sx(p[0])); cross.setAttribute("x2", sx(p[0]));
+    dot.setAttribute("cx", sx(p[0])); dot.setAttribute("cy", sy(p[1]));
+    cross.setAttribute("visibility", "visible"); dot.setAttribute("visibility", "visible");
+    showTip(e, `${de(p[0], 2)} km: <b>${de(p[1], 1)} m ü. NN</b>`);
+  });
+  hit.addEventListener("mouseleave", () => { cross.setAttribute("visibility", "hidden"); dot.setAttribute("visibility", "hidden"); hideTip(); });
+})();
+</script>
+</body>
+</html>
